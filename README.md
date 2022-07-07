@@ -86,3 +86,50 @@ b5-b4
   \___/   \___/   \___/
     a   b   c   d   e   f
 ```
+
+### Simple game
+
+```kotlin
+import com.hexcheckers.engine.*
+import java.util.Scanner
+
+fun main() {
+    println("Welcome to HexCheckers 6x6 game!")
+    val board = Board(Board.Size.SIZE_6X6, true)
+    println(board.toAscii())
+
+    val ai = Ai(board)
+    var currentTurn = Piece.Color.A
+    val scanner = Scanner(System.`in`)
+    while (true) {
+        val availableMoves = board.getAvailableMoves(currentTurn)
+        if (availableMoves.isEmpty()) {
+            println("${getInvertedColor(currentTurn)} win!")
+            break
+        }
+
+        var move: Move? = null
+        if (currentTurn == Piece.Color.A) {
+            while (move == null) {
+                print("👨 Enter your move: ")
+                val input = scanner.nextLine()
+                try {
+                    move = board.buildMove(input)
+                } catch (e: Exception) {
+                    println("❌ Incorrect input")
+                }
+            }
+        } else {
+            print("🤖 Ai move: ...")
+            move = ai.findBestMove(currentTurn)
+            println("\b\b\b$move")
+        }
+        board.executeMove(move!!)
+        println(board.toAscii())
+
+        currentTurn = getInvertedColor(currentTurn)
+    }
+}
+```
+
+![Game demo](https://raw.github.com/hexcheckers/engine/main/.res/hexcheckers-6x6-game-demo.gif)
